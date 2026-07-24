@@ -1,0 +1,30 @@
+name: My First CI-CD Pipeline
+
+# Trigger: Run every time someone pushes code to the main branch
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest  # GitHub spins up a free Linux virtual machine for you
+
+    steps:
+      # Step A: Download your repository code into the virtual machine
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step B: Run a simple quality check (Linting)
+      - name: Check if HTML file exists
+        run: |
+          echo "Starting quality checks..."
+          if [ -f "index.html" ]; then
+            echo "SUCCESS: index.html was found!"
+          else
+            echo "ERROR: index.html is missing!"
+            exit 1
+          fi
+
+      # Step C: Run a simulated build step
+      - name: Build Step
+        run: echo "App built successfully on $(date)"
