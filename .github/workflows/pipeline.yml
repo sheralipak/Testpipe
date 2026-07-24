@@ -1,30 +1,34 @@
-name: My First CI-CD Pipeline
+name: DevSecOps CI-CD Pipeline
 
-# Trigger: Run every time someone pushes code to the main branch
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  test-and-lint:
-    runs-on: ubuntu-latest  # GitHub spins up a free Linux virtual machine for you
+  build-and-scan:
+    runs-on: ubuntu-latest
 
     steps:
-      # Step A: Download your repository code into the virtual machine
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step B: Run a simple quality check (Linting)
-      - name: Check if HTML file exists
+      - name: Quality Gate (Check HTML)
         run: |
-          echo "Starting quality checks..."
           if [ -f "index.html" ]; then
-            echo "SUCCESS: index.html was found!"
+            echo "SUCCESS: index.html exists."
           else
-            echo "ERROR: index.html is missing!"
+            echo "ERROR: index.html missing!"
             exit 1
           fi
 
-      # Step C: Run a simulated build step
-      - name: Build Step
-        run: echo "App built successfully on $(date)"
+      # DevSecOps Step: Scan repository for vulnerabilities
+      - name: Security Scan (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Build & Package
+        run: echo "Build passed all quality & security checks!"
