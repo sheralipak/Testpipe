@@ -21,8 +21,7 @@ jobs:
             exit 1
           fi
 
-      # DevSecOps Step: Scan repository for vulnerabilities
-      - name: Security Scan (Trivy)
+      - name: Security Scan Code (Trivy)
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
@@ -30,5 +29,8 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH'
 
-      - name: Build & Package
-        run: echo "Build passed all quality & security checks!"
+      # Docker Step: Build the container image
+      - name: Build Docker Image
+        run: |
+          docker build -t my-app:${{ github.sha }} .
+          echo "Docker image built successfully!"
